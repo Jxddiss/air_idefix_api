@@ -163,22 +163,7 @@ class VolService(private val volsDAO: VolsDAO) {
   fun chercherTous(): List<Vol> = volsDAO.chercherTous()
 
   fun chercherParId(id: Int): Vol? {
-      val vol = volsDAO.chercherParId(id)
-      val dateAujrd: ChronoLocalDateTime<*> = LocalDateTime.now()
-      val authentication = SecurityContextHolder.getContext().authentication
-
-      if(vol == null){
-          throw RessourceInexistanteException("Le vol $id n'existe pas.")
-      }
-      else if(vol.dateDepart.isBefore(dateAujrd)){
-          if(authentication.authorities.any { it.authority == "consulter:vols"}) {
-              return vol;
-          }
-          else{
-              throw AccèsRefuséException("Vous n'avez pas le droit de consulter ce vol")
-          }
-      }
-      return vol;
+      return volsDAO.chercherParId(id) ?: throw RessourceInexistanteException("Le vol $id n'existe pas.");
   }
 
   @PreAuthorize("hasAuthority('supprimer:vols')")
